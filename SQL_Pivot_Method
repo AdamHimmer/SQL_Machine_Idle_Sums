@@ -1,0 +1,12 @@
+select reason as "Idle Reason", [1] as "Machine 1", [2] as "Machine 2", 
+[3] as "Machine 3", [4] as "Machine 4"
+from
+(
+  select reason, machine, elapsed_seconds
+  from idle_reasons
+) as dataSource
+pivot
+(
+  sum(elapsed_seconds)
+  for machine in ([1], [2], [3], [4])
+) as pivotTable;
