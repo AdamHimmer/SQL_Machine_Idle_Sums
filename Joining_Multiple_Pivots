@@ -1,0 +1,49 @@
+/*Create pivot table summing elapsed seconds for each mahine*/
+with sumTable as (
+	select reason, "1" as sum1, "2" as sum2, "3" as sum3, "4" as sum4
+	from
+	(
+	  select reason, machine, elapsed_seconds
+	  from idle_reasons
+	) as dataSource
+	pivot
+	(
+	  sum(elapsed_seconds)
+	  for machine in ([1], [2], [3], [4])
+	) as pivotTable),
+/*Create pivot table averaging elapsed seconds for each machine*/
+avgTable as (
+	select reason, "1" as avg1, "2" as avg2, "3" as avg3, "4" as avg4
+	from
+	(
+	  select reason, machine, elapsed_seconds
+	  from idle_reasons
+	) as dataSource
+	pivot
+	(
+	  avg(elapsed_seconds)
+	  for machine in ([1], [2], [3], [4])
+	) as pivotTable),
+/*Create pivot table counting number of instances per machine*/
+countTable as (
+	select reason, "1" as cnt1, "2" as cnt2, "3" as cnt3, "4" as cnt4
+	from
+	(
+	  select reason, machine, elapsed_seconds
+	  from idle_reasons
+	) as dataSource
+	pivot
+	(
+	  count(elapsed_seconds)
+	  for machine in ([1], [2], [3], [4])
+	) as pivotTable)
+/*Join the three pivot tables together*/
+select sumTable.reason as Idle_Reason, sum1 as Machine_1_Sum, avg1 as Machine_1_Average, cnt1 as Machine_1_Count, 
+sum2 as Machine_2_Sum, avg2 as Machine_2_Average, cnt2 as Machine_2_Count, 
+sum3 as Machine_3_Sum, avg3 as Machine_3_Average, cnt3 as Machine_3_Count, 
+sum4 as Machine_4_Sum, avg4 as Machine_4_Average, cnt4 as Machine_4_Count 
+from 
+sumTable full outer join avgTable
+on sumTable.reason = avgTable.reason
+full outer join countTable
+on sumTable.reason = countTable.reason;
