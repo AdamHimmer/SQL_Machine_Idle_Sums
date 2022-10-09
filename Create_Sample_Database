@@ -1,5 +1,5 @@
 CREATE TABLE idle_reasons
-    ([date] datetime, [time] varchar(11), [machine] int, [reason] varchar(11), [elapsed_seconds] int)
+    ([date] datetime, [time] time, [machine] int, [reason] varchar(11), [elapsed_seconds] int)
 ;
     
 INSERT INTO idle_reasons
